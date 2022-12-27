@@ -1,22 +1,25 @@
-import * as functions from "firebase-functions";
+import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 admin.initializeApp();
 
 export const helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info("Hello logs!", { structuredData: true });
-  response.send("Hello from Firebase!");
+  functions.logger.info('Hello logs!', { structuredData: true });
+  response.send('Hello from Firebase!');
 });
 
-export const createAlert = functions.https.onCall(async (data: {
-  alertId: string, userId: string, coinId: string, price: number, type: string,
-}, context
-) => {
-  const { alertId, userId, coinId, price, type } = data;
+export const createAlert = functions.https.onRequest((request, response) => {
+  try {
+    const body = request.body;
+    functions.logger.info(body);
 
-  // Create a new alert document in the alerts collection
-  const alertRef = admin.firestore().collection('alerts').doc(alertId);
-  await alertRef.set({ userId, coinId, price, type });
+    const alertRef = admin.firestore().collection('alerts').doc();
+    alertRef.create(body);
 
-  return { message: 'Alert created successfully!' };
+    response.send('Alert created successfully!');
+  } catch (error) {
+    functions.logger.info('Here is the error message: ', { structuredData: true });
+    functions.logger.info(error, { structuredData: true });
+    response.send('Something went wrong!');
+  }
 });
