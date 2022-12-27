@@ -2,12 +2,16 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
+//TODO: Add data validation for <request.body>
+
 const createAlertImpl = async (request: functions.Request, response: functions.Response) => {
     try {
         const { userId, coinId, price, type } = request.body;
         const alertRef = admin.firestore().collection('alerts').doc();
 
-        const alertObject = { id: alertRef.id, userId, coinId, price, type };
+        const alertObject = {
+            id: alertRef.id, createdAt: Date.now(), userId, coinId, price, type,
+        };
         await alertRef.set(alertObject);
 
         response.status(200).send({
