@@ -4,12 +4,12 @@ import * as functions from 'firebase-functions';
 
 import { getErrorMessage } from '../utils/error_message';
 
-
+//TODO: Add data validation for <request.body>
 
 const deleteAlertImpl = async (request: functions.Request, response: functions.Response) => {
   try {
     const { id } = request.body;
-    
+
     const alert = admin.firestore().collection('alerts').doc(id);
 
     await alert.delete().catch((error) => {

@@ -5,7 +5,6 @@ import { createAlertImpl } from './functions/create_alert';
 import { updateAlertImpl } from './functions/update_alert';
 import { deleteAlertImpl } from './functions/delete_alert';
 
-
 admin.initializeApp();
 
 export const createAlert = functions.https.onRequest(createAlertImpl);
