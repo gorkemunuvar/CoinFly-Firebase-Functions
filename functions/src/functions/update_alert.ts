@@ -2,11 +2,13 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
+import { getErrorMessage } from '../utils/error_message';
+
 //TODO: Add data validation for <request.body>
 
 const updateAlertImpl = async (request: functions.Request, response: functions.Response) => {
     try {
-        const { id, userId, coinId, price, type } = request.body;
+        const { id, userId, price, type } = request.body;
 
         const alertRef = admin.firestore().collection('alerts').doc(id);
         const alertSnapshot = await alertRef.get();
@@ -27,9 +29,9 @@ const updateAlertImpl = async (request: functions.Request, response: functions.R
         };
 
         await alertRef.update(alertObject).catch((error) => {
-            return response.status(400).json({
+            response.status(400).send({
                 status: 'Failed',
-                message: error.message,
+                message: getErrorMessage(error),
             });
         });
 
@@ -39,15 +41,11 @@ const updateAlertImpl = async (request: functions.Request, response: functions.R
             data: alertObject,
         });
     } catch (error) {
-        let message = 'Unknown Error';
-        if (error instanceof Error) message = error.message;
-
         response.status(500).send({
             status: 'Failed',
-            message: message,
+            message: getErrorMessage(error),
         });
     }
-
 }
 
 export { updateAlertImpl };
