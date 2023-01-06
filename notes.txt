@@ -1,0 +1,4 @@
+ - Consider for the future:
+   On firestore coinIds collection, createAlert function handles adding new coinIds into the array. 
+   However users may delete alerts and related coinId would still be in the list. It is not needed.
+   
