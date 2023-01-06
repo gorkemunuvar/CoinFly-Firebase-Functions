@@ -10,6 +10,8 @@ const createAlertImpl = async (request: functions.Request, response: functions.R
     try {
         const { userId, coinId, price, type } = request.body;
 
+        await addCoinIdIntoDocumentIfNotExist(coinId);
+
         const alertRef = admin.firestore().collection('alerts').doc();
 
         const alertObject = {
@@ -22,7 +24,6 @@ const createAlertImpl = async (request: functions.Request, response: functions.R
             message: 'Alert created sucessfully.',
             data: alertObject,
         });
-
     } catch (error) {
         response.status(500).send({
             status: 'Failed',
@@ -30,5 +31,18 @@ const createAlertImpl = async (request: functions.Request, response: functions.R
         });
     }
 }
+
+
+const addCoinIdIntoDocumentIfNotExist = async (coinId: string) => {
+    const coinIdsRef = admin.firestore().doc('coins/coinIds');
+    const coinIdsDoc = await coinIdsRef.get();
+    const coinIds = coinIdsDoc.get('coinIds') || [];
+
+    if (!coinIds.includes(coinId)) {
+        coinIds.push(coinId);
+        await coinIdsRef.update({ coinIds });
+    }
+}
+
 
 export { createAlertImpl };
