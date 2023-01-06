@@ -8,7 +8,7 @@ const checkAlertsImpl = async (context: functions.EventContext) => {
     const alertsRef = await admin.firestore().collection('alerts');
     const alertsSnapshot = await alertsRef.where('isActive', '==', true).get();
 
-    const coinIds = ['bitcoin', 'ethereum', 'tether'];
+    const coinIds = await getSavedCoinIds();
     const currentPrices = await fetchCoinPrices(coinIds);
 
     for (const alert of alertsSnapshot.docs) {
@@ -28,6 +28,11 @@ const checkAlertsImpl = async (context: functions.EventContext) => {
         }
     }
 };
+
+const getSavedCoinIds = async (): Promise<Array<string>> => {
+    const coinIdsDoc = await admin.firestore().doc('coins/coinIds').get();
+    return coinIdsDoc.get('coinIds');
+}
 
 
 const baseUrl = 'https://api.coingecko.com/api/v3/simple/price?';
