@@ -10,7 +10,7 @@ const createAlertImpl = async (request: functions.Request, response: functions.R
     try {
         const { userId, coinId, price, type } = request.body;
 
-        await addCoinIdIntoDocumentIfNotExist(coinId);
+        await saveCoinIdIfNotExist(coinId);
 
         const alertRef = admin.firestore().collection('alerts').doc();
 
@@ -33,7 +33,7 @@ const createAlertImpl = async (request: functions.Request, response: functions.R
 }
 
 
-const addCoinIdIntoDocumentIfNotExist = async (coinId: string) => {
+const saveCoinIdIfNotExist = async (coinId: string): Promise<void> => {
     const coinIdsRef = admin.firestore().doc('coins/coinIds');
     const coinIdsDoc = await coinIdsRef.get();
     const coinIds = coinIdsDoc.get('coinIds') || [];
