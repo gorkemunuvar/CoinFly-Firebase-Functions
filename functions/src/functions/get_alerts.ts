@@ -10,9 +10,8 @@ const getAlertsByUserIdImpl = async (request: functions.Request, response: funct
     try {
         const { userId } = request.body;
 
-        const alertsSnapshot = await admin.firestore().collection('alerts')
-            .where('userId', '==', userId)
-            .get();
+        const alertsRef = await admin.firestore().collection('alerts');
+        const alertsSnapshot = await alertsRef.where('userId', '==', userId).get();
 
         const alerts = alertsSnapshot.docs.map(doc => doc.data());
         response.status(200).send({ alerts: alerts });

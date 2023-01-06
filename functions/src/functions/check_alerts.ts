@@ -5,7 +5,9 @@ import axios from 'axios';
 const checkAlertsImpl = async (context: functions.EventContext) => {
     functions.logger.log('Function is working...');
 
-    const alertsSnapshot = await admin.firestore().collection('alerts').get();
+    const alertsRef = await admin.firestore().collection('alerts');
+    const alertsSnapshot = await alertsRef.where('isActive', '==', true).get();
+
     const coinIds = ['bitcoin', 'ethereum', 'tether'];
     const currentPrices = await fetchCoinPrices(coinIds);
 
