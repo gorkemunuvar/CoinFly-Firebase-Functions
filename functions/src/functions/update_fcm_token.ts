@@ -8,19 +8,12 @@ import { getErrorMessage } from '../utils/error_message';
 
 const updateFcmTokenImpl = async (request: functions.Request, response: functions.Response) => {
     try {
-        const { userId, fcmToken, updatedAt } = request.body;
+        const { userId, fcmToken } = request.body;
 
         const usersRef = admin.firestore().collection('users').doc(userId);
-        const userSnapshot = await usersRef.get();
 
-        if (!userSnapshot.exists) {
-            throw new functions.https.HttpsError(
-                'not-found',
-                'The specified user was not found.'
-            )
-        }
-
-        const userObject = { id: userId, fcmToken: fcmToken, updatedAt: updatedAt };
+        const updatedAt = admin.firestore.Timestamp.fromDate(new Date());
+        const userObject = { id: userId, fcmToken, updatedAt };
 
         await usersRef.set(userObject).catch((error) => {
             response.status(400).send({
@@ -29,7 +22,11 @@ const updateFcmTokenImpl = async (request: functions.Request, response: function
             });
         });
 
-
+        response.status(200).send({
+            status: 'Success',
+            message: 'Fcm token updated sucessfully.',
+            data: userObject,
+        });
     } catch (error) {
         response.status(500).send({
             status: 'Failed',
