@@ -26,7 +26,7 @@ const updateAlertImpl = async (request: functions.Request, response: functions.R
             coinId: alertSnapshot.get('coinId'),
             price: price || alertSnapshot.get('price'),
             type: type || alertSnapshot.get('type'),
-            isActive: isActive || alertSnapshot.get('isActive'),
+            isActive: isActive,
         };
 
         await alertRef.update(alertObject).catch((error) => {

@@ -5,7 +5,7 @@ import * as functions from 'firebase-functions';
 import { getErrorMessage } from '../utils/error_message';
 
 //TODO: Add data validation for <request.body>
-
+ 
 const createAlertImpl = async (request: functions.Request, response: functions.Response) => {
     try {
         const { userId, coinId, price, type } = request.body;
