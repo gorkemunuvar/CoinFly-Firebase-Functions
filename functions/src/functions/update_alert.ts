@@ -21,11 +21,11 @@ const updateAlertImpl = async (request: functions.Request, response: functions.R
         }
 
         const alertObject = {
-            id: id || alertSnapshot.get('id'),
+            id: alertSnapshot.get('id'),
             userId: alertSnapshot.get('userId'),
             coinId: alertSnapshot.get('coinId'),
-            price: price || alertSnapshot.get('price'),
-            type: type || alertSnapshot.get('type'),
+            price: price,
+            type: type,
             isActive: isActive,
         };
 
