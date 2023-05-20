@@ -24,15 +24,18 @@ const checkAlertsImpl = async (context: functions.EventContext) => {
 
         if (isPriceAboveTarget || isPriceBelowTarget) {
             const message = `Coin ${coinId} has reached the target price of ${price}!`;
-
             const token = await getFcmTokenByUserId(userId);
-            functions.logger.log('Here is the token');
-            functions.logger.log(token);
 
-            sendPushNotification(token);
-            
+            sendPushNotification(token, message);
+
             functions.logger.log(message);
-            //TODO: After sending the notifications set isActive to false.
+
+            try {
+                const alertRef = admin.firestore().collection('alerts').doc(alert.id);
+                await alertRef.update({ isActive: false });
+            } catch (error) {
+                functions.logger.log(getErrorMessage(error));
+            }
         }
     }
 };
@@ -62,27 +65,16 @@ const getFcmTokenByUserId = async (userId: string): Promise<string> => {
     return data?.fcmToken;
 }
 
-function sendPushNotification(fcmToken: string): Promise<void> {
+
+const sendPushNotification = async (fcmToken: string, alarmMessage: string): Promise<void> => {
     if (!fcmToken) return Promise.resolve();
 
     const message = {
         token: fcmToken,
-        data: {
-            title: 'Coin Alert',
-            body: 'Coin has reached the target price!'
-        },
+        notification: { title: 'Coin Alert', body: alarmMessage },
     };
 
-    admin.messaging().send(message)
-        .then((response) => {
-            functions.logger.log(`Sending alert to this token = ${fcmToken}`);
-        })
-        .catch((error) => {
-            console.log('Error sending message:', getErrorMessage(error));
-        });
-
-
-    return Promise.resolve();
+    await admin.messaging().send(message);
 }
 
 

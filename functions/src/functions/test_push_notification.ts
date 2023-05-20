@@ -11,6 +11,7 @@ const testPushNotificationImpl = async (request: functions.Request, response: fu
         const { fcmToken } = request.body;
 
         await sendPushNotification(fcmToken);
+        functions.logger.log(`Sending alert to this token = ${fcmToken}`);
 
         const successMessage = { 'message': 'Push notification sent successfully.' };
         response.status(200).send(successMessage);
@@ -22,33 +23,18 @@ const testPushNotificationImpl = async (request: functions.Request, response: fu
     }
 }
 
-
-
-function sendPushNotification(fcmToken: string): Promise<void> {
+const sendPushNotification = async (fcmToken: string): Promise<void> => {
     if (!fcmToken) return Promise.resolve();
 
-    const payload = {
+    const message = {
+        token: fcmToken,
         notification: {
             title: 'Testing',
             body: 'Confly push notification works!',
-        }
+        },
     };
 
-    const options = {
-        priority: 'high',
-        timeToLive: 60 * 60 * 24
-    };
-
-    admin.messaging().sendToDevice(fcmToken, payload, options)
-        .then((response) => {
-            functions.logger.log(`Sending alert to this token = ${fcmToken}`);
-        })
-        .catch((error) => {
-            console.log('Error sending message:', getErrorMessage(error));
-        });
-
-
-    return Promise.resolve();
+    await admin.messaging().send(message);
 }
 
 export { testPushNotificationImpl };
