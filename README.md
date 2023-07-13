@@ -1,0 +1,5 @@
+# CoinFly-Firebase-Functions
+
+A small group of Fireabse serverless functions to handle coin alarms server side logic for a coin tracker app. (We call it CoinFly :))
+
+It performs CRUD operations for coin alarms as well as checking users' alarms int firestore and sending a push notification to the user's device.
